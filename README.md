@@ -1,40 +1,35 @@
-# javascript under the hood
+# JavaScript Under The Hood 🙌
 
-## ليه اسمها JavaScript؟
+## Why the name "JavaScript"?
 
-زمان كانت صفحات الويب **static** خالص — مفيش حركة ولا تفاعل. Netscape قررت تعمل لغة برمجة للمتصفح تخلي الويب **Interactive**.
+Initially, web pages were entirely **static**—no movement, no interaction. Netscape decided to create a programming language for the browser to make the web **interactive**.
 
-كلفوا موظف عندهم اسمه **Brendan Eich** يعملها، وعملها في **10 أيام بس!** كانت بسيطة جداً — ومكانوش متوقعين إنها هتبقى اللي بنعمل بيها web apps وكمان backend.
+They assigned an employee named **Brendan Eich** to build it, and he did it in just **10 days!** It was very simple—no one expected it to become the language we use today for massive web apps and even backend development.
 
-> اللغة اتسمت الأول **Mocha** ← بعدين **LiveScript** ← وأخيراً **JavaScript** — مش علشان ليها علاقة بـ Java، ده كان مجرد حركة **تسويق** علشان يجذبوا المبرمجين.
-> 
-
-المهم مش عايز أكمل التفاصيل دي لأني هتظهر **Internet Explorer** بـ **JScript** وبعدها تيجي **ES** علشان تصلح المشكلة — بس دي مش مهمتنا دلوقتي.
+> The language was first named **Mocha** → then **LiveScript** → and finally **JavaScript**. This wasn't because it was related to Java; it was purely a **marketing** move to attract developers at the time.
 
 ---
 
 ## 1. High-level
 
-لغات البرمجة بتتقسم قسمين:
+Programming languages are divided into two main categories:
 
 ### Low-level
-
-- قريبة من الـ Hardware
-- الكود معظمه ترجمة نصية للـ machine code (زي Assembly: `MOV`, `ADD`)
-- إنت بتدير الـ **memory management** بنفسك
-- بتشتغل على معالج معين بس — لأن:
-    - كل معالج ليه **Instruction Set Architecture (ISA)** خاص بيه
-    - كل معالج ليه **ترتيب transistors** مختلف
-    - كل معالج ليه **سجلات** مختلفة
-    - كل معالج ليه **Memory Map** مختلفة
-- **سريعة جداً** لأنها قريبة من الـ machine code
+- Close to the **Hardware**.
+- The code is mostly a text translation of **machine code** (e.g., Assembly: `MOV`, `ADD`).
+- You manage **memory management** yourself.
+- It runs on a specific processor only—because:
+    - Each processor has its own **Instruction Set Architecture (ISA)**.
+    - Each processor has a different **transistor arrangement**.
+    - Each processor has different **registers**.
+    - Each processor has a different **Memory Map**.
+- **Extremely fast** because it is close to the machine code.
 
 ### High-level
-
-- الكود قريب من **كلامنا البشري**
-- بتحتاج ترجمة → يعني أبطأ من الـ low-level
-- الـ **memory management** بتتعملها أوتوماتيك
-- **بتشتغل على أي حاجة** — لأنها مش بتتعامل مع الـ hardware مباشرة
+- The code is close to **human language**.
+- Needs translation → making it slower than low-level languages.
+- **Memory management** is handled automatically.
+- **Portable (Runs on anything)** — because it doesn't interact with the hardware directly.
 
 JavaScript = **High-level** ✅
 
@@ -42,60 +37,53 @@ JavaScript = **High-level** ✅
 
 ## 2. Prototype-based Object-Oriented
 
-### رحلة البرمجة من الأول
+### The Evolution of Programming
 
-**Imperative (زي Assembly/Basic)**
+**Imperative (e.g., Assembly/Basic)**
+- Pure commands: Open, Store, Close, Delete.
+- Loops used `GOTO 100`.
+- Data was all mixed together → the code was a mess.
 
-- لغة أوامر بس: افتح، خزّن، اقفل، امسح
-- الـ loop كانت `GOTO 100`
-- كل الداتا داخلة في بعض → الكود بيبقى كارثة
+**Functional Programming (e.g., C)**
+- The concept of **Scope** appeared.
+- Code became structured into **functions** instead of scattered commands.
+- Functions receive **arguments** → making code scalable.
+- **The Problem:** Core program data had to stay in the **Global Scope** → any function could accidentally modify it 😬.
 
-**Functional Programming (زي C)**
+**Object-Oriented Programming (OOP)**
+- The Idea: Bind data and logic together in one place.
+- The **Object** = An entity with its own **properties** + **methods** + variables.
 
-- ظهر مفهوم الـ **Scope**
-- الكود بقى functions بدل ما يبقى أوامر متفرقة
-- الـ function بتستقبل arguments → الكود قابل للتوسع
-- **المشكلة:** البيانات الأساسية للبرنامج لازم تتحط في الـ Global Scope → أي function تقدر تعدل فيها 😬
+### The 4 Pillars of OOP
 
-**Object-Oriented Programming**
+| Pillar | Meaning |
+| :--- | :--- |
+| **Encapsulation** | Binding data and methods together. |
+| **Abstraction** | Hiding details and showing only what is important. |
+| **Inheritance** | Inheriting from a parent object. |
+| **Polymorphism** | The same command behaves differently depending on the object. |
 
-- الفكرة: نربط الداتا والأوامر في مكان واحد
-- الـ **Object** = كيان ليه **properties** + **methods** + variables خاصة بيه
-
-### الـ 4 أعمدة الأساسية للـ OOP
-
-| العمود | المعنى |
-| --- | --- |
-| Encapsulation | تغليف الداتا والأوامر مع بعض |
-| Abstraction | إخفاء التفاصيل وإظهار بس اللي مهم |
-| Inheritance | الوراثة من parent object |
-| Polymorphism | نفس الأمر بيتصرف بشكل مختلف حسب الـ object |
-
-### Inheritance: Classes vs Prototype
+### Inheritance: Classes vs. Prototype
 
 **Classes:**
+- The object takes properties via **copy-paste** (blueprints).
+- If you delete the parent → your instance keeps what it already has.
 
-- الـ object بياخد الخصائص **copy-paste** حرفياً
-- لو مسحت الـ parent → اللي عندك بيفضل معاك
+**Prototype-based (Used by JS):**
+- Objects have a hidden property called `[[Prototype]]`.
+- If you create another object of the same type → it has a **link** to that prototype.
+- If something in the prototype changes → **it changes for everyone**.
+- More **memory efficient**.
 
-**Prototype-based (اللي بتستخدمه JS):**
-
-- في الـ object property مخفية اسمها `[[Prototype]]`
-- لو عملت object تاني من نفس النوع → بيكون عنده **وصلة** للـ prototype ده
-- لو حاجة في الـ prototype اتغيرت → **الكل اتغير**
-- أكثر كفاءة في الـ memory
-
-> ليه اسمها **Object-Oriented**؟ زمان كنت بفكر "أنا هدي مين الأوامر دي؟" — دلوقتي بفكر "أنا هعمل الأوامر دي **على** الـ object ده."
-> 
+> Why is it called **Object-Oriented**? In the past, the thought was "To whom do I give these commands?"—now it is "I will perform these commands **on** this object."
 
 ---
 
 ## 3. Multi-paradigm
 
-الـ **Paradigm** = الطريقة اللي بتكتب بيها الـ logic بتاعك.
+A **Paradigm** = The style or approach you use to write your logic.
 
-JS بتدعم الـ 3 بالراحة:
-
+JS supports 3 seamlessly:
 - ✅ **Imperative**
 - ✅ **Functional Programming**
 - ✅ **OOP**
@@ -104,97 +92,72 @@ JS بتدعم الـ 3 بالراحة:
 
 ## 4. Interpreted or Just-In-Time Compiled
 
-### قبل الترجمة: الـ AST
+### Before Translation: The AST
+The code undergoes analysis and transforms into an **Abstract Syntax Tree (AST)**—this determines:
+- Variable names.
+- Code flow/direction.
+- Operator precedence.
+- Data types.
 
-الكود بيمر بتحليل وبيتحول لـ **Abstract Syntax Tree (AST)** — ده اللي بيحدد:
-
-- أسماء الـ variables
-- اتجاه الكود
-- أولوية الـ operators
-- الـ Data types
-
-### الـ JIT Compiled
-
-1. الـ **Interpreter** يترجم الكود كله ويحوله لـ **Bytecode** (لغة قريبة من الـ machine code)
-2. ده بيخلي الصفحة تفتح للـ user على طول ✅ (مفيد للـ Lighthouse Performance)
-3. بعدها في **مراقب** — لو لقى كود **hot** (= متكرر زي الـ for loop):
-    - بيرجع يترجمه تاني كـ **machine code** على طول ويبعته للـ CPU طلقة 🚀
-    - ده اسمه **Optimization**
-4. لو المراقب لقى إن الـ function اللي كانت بتاخد `string` بقت بتاخد `number`:
-    - بيلغي الـ optimization → **Deoptimization**
-    - بيرجع الكود للـ interpreter
+### The JIT Compiled
+1. The **Interpreter** translates the code into **Bytecode** (a language close to machine code).
+2. This allows the page to open for the user immediately ✅ (Great for **Lighthouse Performance**).
+3. Then there is a **Monitor**—if it finds **hot** code (= repetitive, like a `for loop`):
+    - It re-translates it directly into **machine code** and sends it to the CPU for maximum speed 🚀.
+    - This is called **Optimization**.
+4. If the monitor finds that a function that used to take a `string` suddenly receives a `number`:
+    - It reverts the optimization → **Deoptimization**.
+    - It sends the code back to the interpreter.
 
 ---
 
 ## 5. Dynamic
-
-يعني **Loosely Typed Language** — مش لازم تحدد نوع الـ variable وإنت بتكتبه.
-
-وده اللي بيخليها هي اللي بتدير الـ **memory management** بدالك.
+Meaning it is a **Loosely Typed Language**—you don't have to define the variable type while writing. This is what allows the engine to handle **memory management** for you.
 
 ---
 
 ## 6. Single-Threaded
-
-الـ JS Engine بينفذ **سطر واحد بس** في نفس الوقت.
-
-> "طب مش هيحصل وقفة لما يلاقي async code؟" → مش لازم، وده بسبب الـ **Event Loop** 👇
-> 
+The JS Engine executes **one line at a time**.
 
 ---
 
 ## 7. Garbage-Collected
-
-الـ **Garbage Collector (GC)** هو اللي بيمسح الحاجات اللي ملهاش reference في الـ heap علشان يوفر مساحة.
+The **Garbage Collector (GC)** is what removes things that no longer have a reference in the **Heap** to free up space.
 
 ### Memory Life Cycle
-
-1. **Allocate** — الحجز في الـ memory (بيحصل في مرحلة الـ Creation)
-2. **Usage** — الاستخدام أثناء الـ running
-3. **Release** — التحرير عن طريق الـ GC أو الـ stack
+1. **Allocate** — Memory allocation (happens during the **Creation Phase**).
+2. **Usage** — Usage during execution.
+3. **Release** — Deallocation via the GC or the stack.
 
 ---
 
 ## 8. JS Engine — Stack & Heap
 
-### الـ Stack
+### The Stack
+- Stores **primitives** and executes code.
+- Called the **Call Stack** during execution.
+- Clears data once execution is finished.
 
-- بيخزن الـ **primitives** وينفذ الكود
-- اسمه **Call Stack** لما بينفذ
-- بيمسح الداتا بعد ما يخلص
-
-### الـ Heap
-
-- بيخزن الـ **objects**
-- كل object ليه **hash** وليه **reference (pointer)** في الـ stack
-- الـ GC هو اللي بيمسح منه لو ملقيش pointer
-
-> كل حاجة في JS ما عدا الـ primitives هي **object** — حتى الـ Array والـ Function! الـ Array هي object بس بتستخدم indexes، والـ Function هي object بس ليها حته الـ calling وبتنفذ كود.
-> 
+### The Heap
+- Stores **objects**.
+- Each object has a **hash** and a **reference (pointer)** in the stack.
+- The **GC** wipes it only if it finds no pointer leading to it.
 
 ---
 
 ## 9. Execution Context (EC)
+The EC is the **Execution Context**—it stores primitives and object references.
 
-الـ EC هو **سياق التنفيذ** — بيتخزن فيه الـ primitives والـ object references.
+### Two Phases:
 
-### مرحلتين:
+**First: Creation Phase** (Based on the AST)
+- **Hoisting** occurs.
+- Data is allocated in memory.
 
-**أولاً: Creation Phase** (بناءً على الـ AST)
+**Second: Execution Phase**
+- It assigns the actual values.
 
-- بيتم فيها الـ **Hoisting**
-- حجز الـ data في الـ memory
-- مثال: `const Ahmed = 10` → بيحجز اسم Ahmed وبيخلي قيمته فاضية الأول
-
-**ثانياً: Execution Phase**
-
-- بيساوي القيم الفعلية
-
-> ليه كده؟ علشان لو حجز وبعدين نفذ → اللغة بتبقى بطيئة جداً. الـ separation ده بيساعد في الأداء.
-> 
-
-### الـ EC بيتكون من 3 حاجات:
-
+### The EC consists of 3 things:
 1. **Variable Environment Object (VEO)**
 2. **Scope Chain**
 3. **this**
@@ -202,188 +165,93 @@ JS بتدعم الـ 3 بالراحة:
 ---
 
 ## 10. Variable Environment Object (VEO)
+A large object containing variables, the arguments object, and `this`.
 
-هو object كبير جواه:
-
-- الـ variables
-- الـ arguments object (للـ regular functions)
-- الـ `this` للـ execution context
-- الـ `if` / `for` لو regular function
-
-**قبل ES6:** كل حاجة كانت في **Object Environment Record** → يعني كل variable بيتسجل كـ property في الـ object → لو global مش هيتمسح → مشاكل كبيرة.
-
-**بعد ES6:** ظهر **Declarative Record** منفصل:
-
-- شايل الـ `let` و `const`
-- مش ظاهر للـ window object
-- مش بيعمل hoisting بنفس طريقة الـ `var`
+**After ES6:** A separate **Declarative Record** appeared to hold `let` and `const`, keeping them safe from the global `window` object.
 
 ---
 
 ## 11. Scope & Scope Chain
 
-### الـ Scope
+### The Scope
+Scope determines where data is accessible.
 
-الـ scope هو اللي بيخلي الداتا تتخزن في VE خاصة بيها وتتحبس جواها.
-
-**أنواع الـ Scope:**
-
-- **Global Scope** — بره كل حاجة
-- **Function Scope** — جوه function
-- **Block Scope (ES6+)** — جوه `if` / `for` وكده
+**Types of Scope:**
+- **Global Scope**
+- **Function Scope**
+- **Block Scope (ES6+)**
 
 ### Lexical Scoping
+Scope is determined **while you are writing** the code—not at runtime.
 
-الـ scope بيتحدد **وإنت بتكتب** — مش وقت التنفيذ. الـ AST هو اللي بيمسك ده.
-
-### الـ Keywords
+### The Keywords
 
 | Keyword | Block Scope | Redeclare | Window Object |
-| --- | --- | --- | --- |
-| `var` | ❌ (function scope بس) | ✅ | ✅ |
+| :--- | :---: | :---: | :---: |
+| `var` | ❌ | ✅ | ✅ |
 | `let` | ✅ | ❌ | ❌ |
 | `const` | ✅ | ❌ | ❌ |
-
-> `var` اتبنت قبل الـ block scope وملقيوش حل فيها علشان مبدأ **"Don't Break the Web"**.
-> 
-
-### الـ Scope Chain
-
-- موجودة في الـ **Heap**
-- شايلة كل الـ VEs
-- لو variable مش موجود في الـ scope الحالي → بيطلع للـ parent → لحد الـ global → ملقاش → **ReferenceError**
-- بيدور للـ أعلى بس (مش لتحت) — لأن الكود بيتنفذ من فوق لتحت
 
 ---
 
 ## 12. Hoisting & TDZ
 
 ### Hoisting
-
-الحجز في الـ memory قبل التنفيذ (= مرحلة الـ Creation).
-
-- **Function declaration** → بتتحجز كاملة في الـ heap ← اقدر اعملها call قبل ما أوصلها ✅
-- **`var`** → بيتحجز الاسم بس، القيمة = `undefined` ⚠️
-- **`let` / `const`** → بيتحجزوا بس من غير قيمة خالص (مش حتى `undefined`)
+Memory allocation before execution.
+- **Function declaration** → Fully allocated.
+- **`var`** → Allocated as `undefined`.
+- **`let` / `const`** → Reserved but uninitialized.
 
 ### Temporal Dead Zone (TDZ)
-
-المنطقة من **بداية الـ scope** لحد **سطر التعريف** — لو لمست الـ variable فيها:
-
-```
-ReferenceError: Cannot access before initialization
-```
+The period between the start of the scope and the actual declaration. Accessing variables here causes a `ReferenceError`.
 
 ---
 
 ## 13. this Keyword
+A special variable pointing to the object currently executing the code.
 
-- **Special variable** بتشاور على الـ object اللي بتشتغل فيه
-- لكل EC ليها `this` خاصة
-
-| النوع | الـ this |
-| --- | --- |
-| Regular Function (method call `obj.fun()`) | بيشاور على الـ object |
-| Regular Function (simple call `fun()`) | بيشاور على الـ window / undefined |
-| Arrow Function | بياخد الـ `this` من الـ parent (lexical this) |
-
-> Arrow function مش عندها `this` خاص بيها ولا **arguments object**.
-> 
-
-### الـ Arguments Object
-
-- object شايل كل الـ arguments في array-like structure
-- اقدر أعد الـ `length` بس مش اقدر أعمل `.map()`
-- الـ Arrow function ملهاش ❌
+| Type | What `this` points to |
+| :--- | :--- |
+| **Regular Function (Method)** | The calling object. |
+| **Regular Function (Simple)** | `window` / `undefined`. |
+| **Arrow Function** | The parent's `this` (**Lexical this**). |
 
 ---
 
 ## 14. Memory Management
-
-### Memory Life Cycle
-
-1. **Allocate** — الحجز
-2. **Usage** — الاستخدام
-3. **Release** — التحرير
-
-### الـ Stack vs Heap
-
-- **Stack:** بيمسح الـ primitives والـ references أوتوماتيك لما الـ EC يخلص
-- **Heap:** الـ GC هو اللي بيمسح لما يشوف object ملهوش pointer
-
-### الـ Global Scope والـ Window
-
-أي حاجة في الـ global scope (`var` قديم) مش بتتمسح لحد ما الـ tab يتقفل — لأن الـ window object شايلها.
+- **Stack:** Auto-clears when the EC ends.
+- **Heap:** Cleared by the **Garbage Collector** when no pointers remain.
 
 ---
 
 ## 15. First-Class Functions
-
-يعني الـ function بتتعامل كـ **مواطن درجة أولى**:
-
-- ✅ اقدر أخزنها جوه variable
-- ✅ اقدر أحطها كـ argument
-- ✅ اقدر أرجع function من function
-
-**ليه بتتعامل كده؟**
-
-علشان زي ما شرحنا في القسم 8 — في JS كل حاجة ما عدا الـ primitives هي **object**. والـ function مش استثناء، هي object بس من نوع خاص بيه حتة الـ calling وبينفذ كود.
-
-وعلشان هي object، بتتخزن في الـ **Heap** زي أي object تاني، ومعاها **reference (pointer)** في الـ stack. ده بالظبط اللي بيخلي JS تقدر تعامل الـ function كـ value عادية — تحطها في variable، تبعتها كـ argument، أو ترجعها من function تانية — لأن في الآخر هي مجرد **pointer لـ object في الـ heap**.
-
-> ده السبب اللي بيخلي مفاهيم زي الـ callbacks والـ higher-order functions شغالة في JS بشكل طبيعي جداً.
-> 
+Functions are **first-class citizens**:
+- ✅ Store in variables.
+- ✅ Pass as arguments.
+- ✅ Return from other functions.
 
 ---
 
-## 16. Non-blocking Event Loop (Concurrency Model)
+## 16. Non-blocking Event Loop
 
-### مكونات الـ Runtime
-
-```
-┌─────────────────┐    ┌──────────────┐
-│   JS Engine     │    │   Web APIs   │
-│  ┌───────────┐  │    │              │
-│  │Call Stack │  │───>│ setTimeout   │
-│  └───────────┘  │    │ DOM events   │
-│  ┌───────────┐  │    │ fetch        │
-│  │   Heap    │  │    └──────┬───────┘
-│  └───────────┘  │           │
-└─────────────────┘           ▼
-                    ┌──────────────────┐
-                    │  Callback Queue  │
-                    └────────┬─────────┘
-                             │
-                    ┌────────▼─────────┐
-                    │   Event Loop     │
-                    │ (لو Stack فاضي  │
-                    │  بيطلع من Queue │
-                    │  وبيحطه في Stack)│
-                    └──────────────────┘
-```
-
-### إزاي بيشتغل؟
-
-1. الـ JS Engine لو لقى حاجة زي DOM أو setTimeout → بيبعتها للـ **Web APIs**
-2. لما تخلص → بيتحطها في الـ **Callback Queue**
-3. الـ **Event Loop** بيراقب — لو الـ Call Stack فاضي → بيطلع الـ callback ويحطه في الـ stack
-4. بالتالي الـ UI مش بيقف ✅ → **Non-blocking**
+1. **JS Engine** sends async tasks (DOM, fetch) to **Web APIs**.
+2. When finished, tasks wait in the **Callback Queue**.
+3. The **Event Loop** pushes them to the **Stack** only when it is empty.
 
 ---
 
-## ملخص: شرح الجملة كلها
+## Summary
 
-> *JavaScript is a high-level, prototype-based object-oriented, multi-paradigm, interpreted or just-in-time compiled, dynamic, single-threaded, garbage-collected programming language with first-class functions and a non-blocking event loop concurrency model.*
-> 
+| **Term** | **Simplified Meaning** |
+| :--- | :--- |
+| **High-level** | Manages memory and abstracts hardware. |
+| **Prototype-based** | Uses prototype chains for inheritance. |
+| **Multi-paradigm** | Supports OOP, Functional, and Imperative. |
+| **JIT Compiled** | Optimizes hot code at runtime. |
+| **Dynamic** | Loosely typed variables. |
+| **Single-threaded** | One task at a time. |
+| **Garbage-collected** | Auto-memory cleanup. |
+| **First-class functions** | Functions as values. |
+| **Non-blocking** | Async code via the Event Loop. |
 
-| **المصطلح** | **المعنى ببساطة** |
-| --- | --- |
-| High-level | قريبة من البشر، بعيدة عن الـ hardware، بتدير الـ memory بنفسها |
-| Prototype-based OOP | بتدعم الـ objects عن طريق الـ prototype chain مش الـ classes الكلاسيكية |
-| Multi-paradigm | تقدر تكتب Imperative أو Functional أو OOP |
-| JIT Compiled | بتترجم لـ bytecode أول، وبعدين لـ machine code للكود الـ hot |
-| Dynamic | Loosely typed — مش لازم تحدد نوع الـ variable |
-| Single-threaded | بتنفذ سطر واحد في نفس الوقت |
-| Garbage-collected | بتمسح الـ objects اللي ملهاش reference أوتوماتيك |
-| First-class functions | الـ function مواطن درجة أولى — تخزن، تبعت، ترجع |
-| Non-blocking Event Loop | الـ async code مش بيوقف الـ UI عن طريق الـ Web APIs والـ Callback Queue |
+---
