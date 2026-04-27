@@ -1,5 +1,7 @@
 # JavaScript Under The Hood 🙌
 
+> "JavaScript is a high-level, prototype-based object-oriented, multi-paradigm, interpreted or just-in-time compiled, dynamic, single-threaded, garbage-collected programming language with first-class functions and a non-blocking event loop concurrency model."
+
 ## Why the name "JavaScript"?
 
 Initially, web pages were entirely **static**—no movement, no interaction. Netscape decided to create a programming language for the browser to make the web **interactive**.
@@ -100,6 +102,8 @@ The code undergoes analysis and transforms into an **Abstract Syntax Tree (AST)*
 - Code flow/direction.
 - Operator precedence.
 - Data types.
+
+
 
 ### The JIT Compiled
 1. The **Interpreter** translates the code into **Bytecode** (a language close to machine code).
@@ -235,7 +239,7 @@ The area from the **start of the scope** until the **line of declaration**—if 
 ---
 
 ## 13. this Keyword
-- A **Special variable** that points to the object currently being executed.
+- A **Special variable** because it points to the object currently being executed.
 - Each EC has its own `this`.
 
 | Type | What `this` points to |
@@ -287,6 +291,7 @@ Since they are objects, they are stored in the **Heap** just like any other obje
 ## 16. Non-blocking Event Loop (Concurrency Model)
 
 ### Runtime Components
+
 
 
 ### How it works:
