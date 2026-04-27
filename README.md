@@ -312,3 +312,8 @@ Since they are objects, they are stored in the **Heap** just like any other obje
 | **Garbage-collected** | Automatically clears objects with no references. |
 | **First-class functions** | Functions can be stored, passed, and returned. |
 | **Non-blocking Event Loop** | Async code doesn't freeze the UI via Web APIs/Queues. |
+
+---
+
+### 🔗 Connect with me
+- **GitHub:** [GitHub](https://github.com/ahmed-let-front)
