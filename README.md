@@ -8,6 +8,8 @@ They assigned an employee named **Brendan Eich** to build it, and he did it in j
 
 > The language was first named **Mocha** → then **LiveScript** → and finally **JavaScript**. This wasn't because it was related to Java; it was purely a **marketing** move to attract developers at the time.
 
+I won't go into more history, like how **Internet Explorer** appeared with **JScript** and how **ES** (ECMAScript) came to solve the fragmentation—that’s a story for another time.
+
 ---
 
 ## 1. High-level
@@ -66,7 +68,7 @@ JavaScript = **High-level** ✅
 ### Inheritance: Classes vs. Prototype
 
 **Classes:**
-- The object takes properties via **copy-paste** (blueprints).
+- The object takes properties via **copy-paste** literally (blueprints).
 - If you delete the parent → your instance keeps what it already has.
 
 **Prototype-based (Used by JS):**
@@ -119,6 +121,8 @@ Meaning it is a **Loosely Typed Language**—you don't have to define the variab
 ## 6. Single-Threaded
 The JS Engine executes **one line at a time**.
 
+> "Wait, won't it freeze when it hits async code?" → Not necessarily, and that is thanks to the **Event Loop** 👇.
+
 ---
 
 ## 7. Garbage-Collected
@@ -126,7 +130,7 @@ The **Garbage Collector (GC)** is what removes things that no longer have a refe
 
 ### Memory Life Cycle
 1. **Allocate** — Memory allocation (happens during the **Creation Phase**).
-2. **Usage** — Usage during execution.
+2. **Usage** — Usage during execution (**Running**).
 3. **Release** — Deallocation via the GC or the stack.
 
 ---
@@ -143,6 +147,8 @@ The **Garbage Collector (GC)** is what removes things that no longer have a refe
 - Each object has a **hash** and a **reference (pointer)** in the stack.
 - The **GC** wipes it only if it finds no pointer leading to it.
 
+> Everything in JS except primitives is an **object**—even Arrays and Functions! An Array is an object using indexes; a Function is an object with a "calling" capability that executes code.
+
 ---
 
 ## 9. Execution Context (EC)
@@ -153,9 +159,12 @@ The EC is the **Execution Context**—it stores primitives and object references
 **First: Creation Phase** (Based on the AST)
 - **Hoisting** occurs.
 - Data is allocated in memory.
+- Example: `const Ahmed = 10` → it reserves the name "Ahmed" and initializes it as empty first.
 
 **Second: Execution Phase**
 - It assigns the actual values.
+
+> Why? Because if it allocated and executed line-by-line → the language would be very slow. This separation boosts performance.
 
 ### The EC consists of 3 things:
 1. **Variable Environment Object (VEO)**
@@ -165,93 +174,141 @@ The EC is the **Execution Context**—it stores primitives and object references
 ---
 
 ## 10. Variable Environment Object (VEO)
-A large object containing variables, the arguments object, and `this`.
+A large object containing:
+- Variables.
+- The **arguments object** (for regular functions).
+- `this` for the current execution context.
+- The `if` / `for` logic if inside a regular function.
 
-**After ES6:** A separate **Declarative Record** appeared to hold `let` and `const`, keeping them safe from the global `window` object.
+**Before ES6:** Everything was in the **Object Environment Record** → meaning every variable was registered as a property on the global object → if global, it was never cleared → huge problems.
+
+**After ES6:** A separate **Declarative Record** appeared:
+- Holds `let` and `const`.
+- Not visible to the `window` object.
+- Does not hoist the same way as `var`.
 
 ---
 
 ## 11. Scope & Scope Chain
 
 ### The Scope
-Scope determines where data is accessible.
+Scope is what allows data to be stored in its own specific VE and keeps it "locked" inside.
 
 **Types of Scope:**
-- **Global Scope**
-- **Function Scope**
-- **Block Scope (ES6+)**
+- **Global Scope** — Outside everything.
+- **Function Scope** — Inside a function.
+- **Block Scope (ES6+)** — Inside `{}` blocks like `if` / `for`.
 
 ### Lexical Scoping
-Scope is determined **while you are writing** the code—not at runtime.
+Scope is determined **while you are writing** the code—not at runtime. The AST handles this.
 
 ### The Keywords
 
 | Keyword | Block Scope | Redeclare | Window Object |
 | :--- | :---: | :---: | :---: |
-| `var` | ❌ | ✅ | ✅ |
+| `var` | ❌ (Function scope only) | ✅ | ✅ |
 | `let` | ✅ | ❌ | ❌ |
 | `const` | ✅ | ❌ | ❌ |
+
+> `var` was built before block scope, and they couldn't "fix" it later due to the **"Don't Break the Web"** principle.
+
+### The Scope Chain
+- Located in the **Heap**.
+- Contains all **VEs**.
+- If a variable is not in the current scope → it looks at the parent → then the global → if not found → **ReferenceError**.
+- It only looks **Up** (not down)—because code executes top-down.
 
 ---
 
 ## 12. Hoisting & TDZ
 
 ### Hoisting
-Memory allocation before execution.
-- **Function declaration** → Fully allocated.
-- **`var`** → Allocated as `undefined`.
-- **`let` / `const`** → Reserved but uninitialized.
+Memory allocation before execution (during the **Creation Phase**).
+- **Function declaration** → Fully allocated in the heap ← Can be called before its definition ✅.
+- **`var`** → Only the name is reserved, value = `undefined` ⚠️.
+- **`let` / `const`** → Reserved but without any value (not even `undefined`).
 
 ### Temporal Dead Zone (TDZ)
-The period between the start of the scope and the actual declaration. Accessing variables here causes a `ReferenceError`.
+The area from the **start of the scope** until the **line of declaration**—if you touch the variable here:
+`ReferenceError: Cannot access before initialization`
 
 ---
 
 ## 13. this Keyword
-A special variable pointing to the object currently executing the code.
+- A **Special variable** that points to the object currently being executed.
+- Each EC has its own `this`.
 
 | Type | What `this` points to |
 | :--- | :--- |
-| **Regular Function (Method)** | The calling object. |
-| **Regular Function (Simple)** | `window` / `undefined`. |
+| **Regular Function (Method call `obj.fun()`)** | The object calling the method. |
+| **Regular Function (Simple call `fun()`)** | `window` / `undefined` (in strict mode). |
 | **Arrow Function** | The parent's `this` (**Lexical this**). |
+
+> Arrow functions do NOT have their own `this` or **arguments object**.
+
+### The Arguments Object
+- An object containing all arguments in an array-like structure.
+- You can check `.length` but you cannot use `.map()`.
+- Arrow functions do not have it ❌.
 
 ---
 
 ## 14. Memory Management
-- **Stack:** Auto-clears when the EC ends.
-- **Heap:** Cleared by the **Garbage Collector** when no pointers remain.
+
+### Memory Life Cycle
+1. **Allocate** — Reservation.
+2. **Usage** — Utilization.
+3. **Release** — Freeing up.
+
+### Stack vs. Heap
+- **Stack:** Automatically clears primitives and references when the EC ends.
+- **Heap:** The GC clears it when it sees an object with no pointer.
+
+### Global Scope and the Window
+Anything in the global scope (old `var`) is not cleared until the tab is closed—because the `window` object is holding onto it.
 
 ---
 
 ## 15. First-Class Functions
-Functions are **first-class citizens**:
-- ✅ Store in variables.
-- ✅ Pass as arguments.
-- ✅ Return from other functions.
+This means the function is treated as a **first-class citizen**:
+- ✅ Can be stored in a variable.
+- ✅ Can be passed as an argument.
+- ✅ Can be returned from a function.
+
+**Why is it treated this way?**
+As explained in Section 8—in JS, everything except primitives is an **object**. Functions are no exception; they are objects of a special type that can be "called" and execute code.
+
+Since they are objects, they are stored in the **Heap** just like any other object, with a **reference (pointer)** in the stack. This is exactly what allows JS to treat a function as a regular value—to put it in a variable, send it as an argument, or return it from another function—because in the end, it is just a **pointer to an object in the heap**.
+
+> This is why concepts like **callbacks** and **higher-order functions** work naturally in JS.
 
 ---
 
-## 16. Non-blocking Event Loop
+## 16. Non-blocking Event Loop (Concurrency Model)
 
-1. **JS Engine** sends async tasks (DOM, fetch) to **Web APIs**.
-2. When finished, tasks wait in the **Callback Queue**.
-3. The **Event Loop** pushes them to the **Stack** only when it is empty.
+### Runtime Components
+
+
+### How it works:
+1. If the JS Engine finds something like the DOM or `setTimeout` → it sends it to the **Web APIs**.
+2. Once finished → it is placed in the **Callback Queue**.
+3. The **Event Loop** monitors—if the **Call Stack** is empty → it takes the callback and pushes it onto the stack.
+4. Consequently, the UI does not freeze ✅ → **Non-blocking**.
 
 ---
 
-## Summary
+## Summary: Explaining the Full Definition
+
+> *JavaScript is a high-level, prototype-based object-oriented, multi-paradigm, interpreted or just-in-time compiled, dynamic, single-threaded, garbage-collected programming language with first-class functions and a non-blocking event loop concurrency model.*
 
 | **Term** | **Simplified Meaning** |
 | :--- | :--- |
-| **High-level** | Manages memory and abstracts hardware. |
-| **Prototype-based** | Uses prototype chains for inheritance. |
-| **Multi-paradigm** | Supports OOP, Functional, and Imperative. |
-| **JIT Compiled** | Optimizes hot code at runtime. |
-| **Dynamic** | Loosely typed variables. |
-| **Single-threaded** | One task at a time. |
-| **Garbage-collected** | Auto-memory cleanup. |
-| **First-class functions** | Functions as values. |
-| **Non-blocking** | Async code via the Event Loop. |
-
----
+| **High-level** | Human-friendly, abstracts hardware, manages memory. |
+| **Prototype-based OOP** | Uses prototype chains for objects instead of classical classes. |
+| **Multi-paradigm** | Supports Imperative, Functional, and OOP styles. |
+| **JIT Compiled** | Translates to bytecode first, then machine code for "hot" segments. |
+| **Dynamic** | Loosely typed—no need to declare types manually. |
+| **Single-threaded** | Executes one line at a time. |
+| **Garbage-collected** | Automatically clears objects with no references. |
+| **First-class functions** | Functions can be stored, passed, and returned. |
+| **Non-blocking Event Loop** | Async code doesn't freeze the UI via Web APIs/Queues. |
